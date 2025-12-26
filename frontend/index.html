@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinearRAG Web Console</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <rect width="32" height="32" rx="8" fill="#4F46E5"/>
+                        <path d="M8 12h16M8 16h12M8 20h14" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    <span>LinearRAG</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-section="dashboard">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7" rx="1"/>
+                        <rect x="14" y="3" width="7" height="7" rx="1"/>
+                        <rect x="3" y="14" width="7" height="7" rx="1"/>
+                        <rect x="14" y="14" width="7" height="7" rx="1"/>
+                    </svg>
+                    仪表盘
+                </a>
+                <a href="#" class="nav-item" data-section="upload">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17,8 12,3 7,8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    文件上传
+                </a>
+                <a href="#" class="nav-item" data-section="pipeline">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12,6 12,12 16,14"/>
+                    </svg>
+                    流水线处理
+                </a>
+                <a href="#" class="nav-item" data-section="query">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                    在线查询
+                </a>
+                <a href="#" class="nav-item" data-section="datasets">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    数据集管理
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="system-status">
+                    <div class="status-indicator" id="systemStatus"></div>
+                    <span id="statusText">系统就绪</span>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 仪表盘 -->
+            <section id="dashboard" class="section active">
+                <div class="section-header">
+                    <h1>系统仪表盘</h1>
+                    <p>查看系统状态和快速统计</p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="statDatasets">0</span>
+                            <span class="stat-label">数据集</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14,2 14,8 20,8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="statDocuments">0</span>
+                            <span class="stat-label">文档数量</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon purple">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12,6 12,12 16,14"/>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="statQueries">0</span>
+                            <span class="stat-label">查询次数</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon orange">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                <path d="M2 17l10 5 10-5"/>
+                                <path d="M2 12l10 5 10-5"/>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="statModels">2</span>
+                            <span class="stat-label">模型状态</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>处理进度</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="progress-container">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                                </div>
+                                <div class="progress-info">
+                                    <span id="progressStep">等待任务...</span>
+                                    <span id="progressPercent">0%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>快速操作</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="quick-actions">
+                                <button class="btn btn-primary" onclick="switchSection('upload')">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                        <polyline points="17,8 12,3 7,8"/>
+                                        <line x1="12" y1="3" x2="12" y2="15"/>
+                                    </svg>
+                                    上传文件
+                                </button>
+                                <button class="btn btn-secondary" onclick="switchSection('query')">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="11" cy="11" r="8"/>
+                                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                    </svg>
+                                    发起查询
+                                </button>
+                                <button class="btn btn-outline" onclick="refreshStatus()">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="23,4 23,10 17,10"/>
+                                        <polyline points="1,20 1,14 7,14"/>
+                                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                                    </svg>
+                                    刷新状态
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 文件上传 -->
+            <section id="upload" class="section">
+                <div class="section-header">
+                    <h1>文件上传</h1>
+                    <p>上传JSON格式的文档数据用于RAG处理</p>
+                </div>
+                
+                <div class="upload-container">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>上传文档</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="datasetName">数据集名称</label>
+                                <input type="text" id="datasetName" placeholder="输入数据集名称，如: my_docs">
+                            </div>
+                            
+                            <div class="file-drop-zone" id="dropZone">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="17,8 12,3 7,8"/>
+                                    <line x1="12" y1="3" x2="12" y2="15"/>
+                                </svg>
+                                <p>拖拽JSON文件到此处，或 <span class="browse-link">浏览选择</span></p>
+                                <input type="file" id="fileInput" accept=".json" hidden>
+                            </div>
+                            
+                            <div class="file-info" id="fileInfo" style="display: none;">
+                                <div class="file-details">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                        <polyline points="14,2 14,8 20,8"/>
+                                    </svg>
+                                    <div class="file-meta">
+                                        <span id="fileName"></span>
+                                        <span id="fileSize"></span>
+                                    </div>
+                                </div>
+                                <button class="btn-icon" onclick="clearFile()">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="18" y1="6" x2="6" y2="18"/>
+                                        <line x1="6" y1="6" x2="18" y2="18"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            
+                            <div class="format-hint">
+                                <h4>支持的文件格式</h4>
+                                <ul>
+                                    <li>JSON数组: <code>["text1", "text2", ...]</code></li>
+                                    <li>对象数组: <code>[{"text": "..."}, ...]</code></li>
+                                    <li>带chunks的对象: <code>{"chunks": [...]}</code></li>
+                                </ul>
+                            </div>
+                            
+                            <button class="btn btn-primary btn-block" id="uploadBtn" onclick="uploadFile()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="17,8 12,3 7,8"/>
+                                    <line x1="12" y1="3" x2="12" y2="15"/>
+                                </svg>
+                                上传文件
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>上传历史</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="upload-history" id="uploadHistory">
+                                <div class="empty-state">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                                    </svg>
+                                    <p>暂无上传记录</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 流水线处理 -->
+            <section id="pipeline" class="section">
+                <div class="section-header">
+                    <h1>流水线处理</h1>
+                    <p>构建文档索引，启动RAG处理流水线</p>
+                </div>
+                
+                <div class="pipeline-container">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>选择数据集</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="pipelineDataset">已上传的数据集</label>
+                                <select id="pipelineDataset">
+                                    <option value="">请选择数据集...</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>流水线配置</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="config-grid">
+                                <div class="form-group">
+                                    <label for="spacyModel">Spacy模型</label>
+                                    <select id="spacyModel">
+                                        <option value="en_core_web_trf">en_core_web_trf (英文)</option>
+                                        <option value="en_core_web_sm">en_core_web_sm (轻量版)</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="embeddingModel">嵌入模型</label>
+                                    <input type="text" id="embeddingModel" value="model/all-mpnet-base-v2" readonly>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="llmModel">LLM模型</label>
+                                    <select id="llmModel">
+                                        <option value="gpt-4o-mini">GPT-4o-mini</option>
+                                        <option value="gpt-4o">GPT-4o</option>
+                                        <option value="gpt-3.5-turbo">GPT-3.5-turbo</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="maxWorkers">并行线程数</label>
+                                    <input type="number" id="maxWorkers" value="4" min="1" max="16">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="retrievalTopK">检索Top-K</label>
+                                    <input type="number" id="retrievalTopK" value="5" min="1" max="20">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="maxIterations">最大迭代次数</label>
+                                    <input type="number" id="maxIterations" value="3" min="1" max="10">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>执行流水线</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="pipeline-actions">
+                                <button class="btn btn-primary" onclick="startPipeline()">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="5,3 19,12 5,21 5,3"/>
+                                    </svg>
+                                    开始索引
+                                </button>
+                                <button class="btn btn-secondary" onclick="stopPipeline()" id="stopBtn" disabled>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="6" y="4" width="4" height="16"/>
+                                        <rect x="14" y="4" width="4" height="16"/>
+                                    </svg>
+                                    停止
+                                </button>
+                            </div>
+                            
+                            <div class="pipeline-progress" id="pipelineProgress" style="display: none;">
+                                <div class="pipeline-steps">
+                                    <div class="step" data-step="loading_embedding">
+                                        <div class="step-icon">1</div>
+                                        <div class="step-content">
+                                            <span class="step-title">加载嵌入模型</span>
+                                            <span class="step-status">等待中</span>
+                                        </div>
+                                    </div>
+                                    <div class="step" data-step="loading_llm">
+                                        <div class="step-icon">2</div>
+                                        <div class="step-content">
+                                            <span class="step-title">加载LLM模型</span>
+                                            <span class="step-status">等待中</span>
+                                        </div>
+                                    </div>
+                                    <div class="step" data-step="initializing">
+                                        <div class="step-icon">3</div>
+                                        <div class="step-content">
+                                            <span class="step-title">初始化</span>
+                                            <span class="step-status">等待中</span>
+                                        </div>
+                                    </div>
+                                    <div class="step" data-step="creating_rag">
+                                        <div class="step-icon">4</div>
+                                        <div class="step-content">
+                                            <span class="step-title">创建RAG实例</span>
+                                            <span class="step-status">等待中</span>
+                                        </div>
+                                    </div>
+                                    <div class="step" data-step="indexing">
+                                        <div class="step-icon">5</div>
+                                        <div class="step-content">
+                                            <span class="step-title">索引文档</span>
+                                            <span class="step-status">等待中</span>
+                                        </div>
+                                    </div>
+                                    <div class="step" data-step="completed">
+                                        <div class="step-icon">✓</div>
+                                        <div class="step-content">
+                                            <span class="step-title">完成</span>
+                                            <span class="step-status">等待中</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="pipelineProgressFill" style="width: 0%"></div>
+                                </div>
+                                <div class="progress-text" id="pipelineProgressText">准备开始...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 在线查询 -->
+            <section id="query" class="section">
+                <div class="section-header">
+                    <h1>在线查询</h1>
+                    <p>基于已索引的文档进行问答检索</p>
+                </div>
+                
+                <div class="query-container">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>查询配置</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="queryDataset">选择数据集</label>
+                                <select id="queryDataset">
+                                    <option value="">请选择已索引的数据集...</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="queryTopK">返回结果数量</label>
+                                <input type="number" id="queryTopK" value="5" min="1" max="20">
+                            </div>
+                            
+                            <div class="form-group checkbox-group">
+                                <label>
+                                    <input type="checkbox" id="useLLM" checked>
+                                    使用LLM生成答案
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>问题输入</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="query-input-container">
+                                <textarea id="questionInput" placeholder="输入您的问题..." rows="3"></textarea>
+                                <button class="btn btn-primary" onclick="submitQuery()" id="queryBtn">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="11" cy="11" r="8"/>
+                                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                    </svg>
+                                    查询
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="query-results" id="queryResults" style="display: none;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>检索结果</h3>
+                                <div class="result-meta" id="resultMeta"></div>
+                            </div>
+                            <div class="card-body">
+                                <div class="answer-section" id="answerSection" style="display: none;">
+                                    <h4>答案</h4>
+                                    <div class="answer-content" id="answerContent"></div>
+                                </div>
+                                
+                                <div class="thought-section" id="thoughtSection" style="display: none;">
+                                    <h4>推理过程</h4>
+                                    <div class="thought-content" id="thoughtContent"></div>
+                                </div>
+                                
+                                <div class="retrieved-docs">
+                                    <h4>检索到的文档片段</h4>
+                                    <div class="docs-list" id="docsList"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 数据集管理 -->
+            <section id="datasets" class="section">
+                <div class="section-header">
+                    <h1>数据集管理</h1>
+                    <p>管理已索引的数据集</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>已索引的数据集</h3>
+                        <button class="btn btn-outline" onclick="loadDatasets()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="23,4 23,10 17,10"/>
+                                <polyline points="1,20 1,14 7,14"/>
+                                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                            </svg>
+                            刷新
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="datasets-list" id="datasetsList">
+                            <div class="empty-state">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                                </svg>
+                                <p>暂无已索引的数据集</p>
+                                <p class="hint">请先上传文件并执行索引流水线</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <!-- Toast通知 -->
+    <div class="toast-container" id="toastContainer"></div>
+    
+    <!-- 加载遮罩 -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="spinner"></div>
+        <p id="loadingText">处理中...</p>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
